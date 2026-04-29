@@ -1115,9 +1115,9 @@
       </li>
     </ul>
 
-    <div style="text-align:center; margin-top: 40px;" class="fade-in">
-      <button onclick="openInquiryModal()" style="display:inline-block;padding:18px 48px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#1a1a1a;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;transition:all 0.3s;box-shadow:0 4px 20px rgba(212,175,55,0.3);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 28px rgba(212,175,55,0.45)';" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(212,175,55,0.3)';">Request Full Prospectus</button>
-      <p style="color:var(--warm-gray);font-size:13px;margin-top:12px;">All 12 documents available for qualified investors upon request</p>
+    <div style="text-align:center; margin-top: 40px; display:flex; flex-direction:column; align-items:center; gap:16px;" class="fade-in">
+      <button class="cta-contact" id="ctaContact" style="display:inline-block;padding:18px 48px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#1a1a1a;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;transition:all 0.3s;box-shadow:0 4px 20px rgba(212,175,55,0.3);">Contact Property Owner</button>
+      <button class="cta-viewing" id="ctaViewing" style="display:inline-block;padding:14px 40px;background:transparent;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;border:1px solid var(--gold);border-radius:8px;cursor:pointer;letter-spacing:0.5px;transition:all 0.3s;">Schedule Property Viewing</button>
     </div>
   </div>
 </section>
@@ -1125,15 +1125,15 @@
 <!-- ==================== INQUIRY MODAL ==================== -->
 <div class="modal-overlay" id="inquiryModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeInquiryModal()">&times;</button>
+    <button class="modal-close" id="modalCloseBtn">&times;</button>
     <div id="modalForm">
-      <h3>Request Full Prospectus</h3>
-      <p class="modal-sub">Complete the form below and our team will send you the full investment package within 24 hours.</p>
+      <h3 id="modalTitle">Contact Property Owner</h3>
+      <p class="modal-sub" id="modalSub">Leave your details and the property owner will contact you directly within 24 hours.</p>
 
       <label>Inquiry Type</label>
       <div class="type-toggle">
-        <button class="type-btn active" onclick="setType(this,'private')" type="button">Private Individual</button>
-        <button class="type-btn" onclick="setType(this,'agency')" type="button">Agency / Company</button>
+        <button class="type-btn active" id="typePrivate" type="button">Private Individual</button>
+        <button class="type-btn" id="typeAgency" type="button">Agency / Company</button>
       </div>
 
       <label>Full Name / Company Name</label>
@@ -1145,12 +1145,12 @@
       <label>WhatsApp Number</label>
       <input type="tel" id="inqWhatsapp" placeholder="+1 234 567 8900">
 
-      <button class="modal-submit" id="inqSubmitBtn" onclick="submitInquiry()">Send Request</button>
+      <button class="modal-submit" id="inqSubmitBtn">Send Request</button>
     </div>
     <div id="modalSuccess" class="modal-success" style="display:none;">
       <div class="check">✓</div>
       <h3>Request Received</h3>
-      <p>Thank you for your interest in Paradise Palm Villa. Our investment team will contact you within 24 hours with the complete prospectus package.</p>
+      <p>Thank you for your interest in Paradise Palm Villa. The property owner will contact you within 24 hours.</p>
     </div>
   </div>
 </div>
@@ -1159,7 +1159,7 @@
 <div class="footer">
   <div class="footer-title">Paradise Palm Villa · <em style="color: var(--gold); font-style: italic;">Bali Investment</em></div>
   <p>A unique opportunity to acquire a fully operational, revenue-generating villa in Bali's most sought-after area — with verified documentation, proven yields of 15–27% per annum, and 22 years of remaining leasehold with priority renewal right.</p>
-  <button onclick="openInquiryModal()" class="footer-cta" style="border:none;cursor:pointer;">Request Full Prospectus</button>
+  <button class="footer-cta" id="ctaFooter" style="border:none;cursor:pointer;">Contact Property Owner</button>
   <div class="footer-note">Confidential · For Qualified Investors Only · 2026</div>
 </div>
 
@@ -1189,38 +1189,59 @@ window.addEventListener('scroll', () => {
 });
 
 let inquiryType = 'private';
+let inquirySource = 'contact';
 
-function openInquiryModal() {
+function openModal(source) {
+  inquirySource = source || 'contact';
+  const title = document.getElementById('modalTitle');
+  const sub = document.getElementById('modalSub');
+  if (source === 'viewing') {
+    title.textContent = 'Schedule Property Viewing';
+    sub.textContent = 'Leave your details and we will arrange a private viewing of the villa at your convenience.';
+  } else {
+    title.textContent = 'Contact Property Owner';
+    sub.textContent = 'Leave your details and the property owner will contact you directly within 24 hours.';
+  }
   document.getElementById('inquiryModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeInquiryModal() {
+function closeModal() {
   document.getElementById('inquiryModal').classList.remove('open');
   document.body.style.overflow = '';
-  setTimeout(() => {
+  setTimeout(function() {
     document.getElementById('modalForm').style.display = '';
     document.getElementById('modalSuccess').style.display = 'none';
   }, 300);
 }
 
-function setType(btn, type) {
-  inquiryType = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+document.getElementById('ctaContact').addEventListener('click', function() { openModal('contact'); });
+document.getElementById('ctaViewing').addEventListener('click', function() { openModal('viewing'); });
+document.getElementById('ctaFooter').addEventListener('click', function() { openModal('contact'); });
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
 
-async function submitInquiry() {
-  const name = document.getElementById('inqName').value.trim();
-  const email = document.getElementById('inqEmail').value.trim();
-  const whatsapp = document.getElementById('inqWhatsapp').value.trim();
-  const btn = document.getElementById('inqSubmitBtn');
+document.getElementById('typePrivate').addEventListener('click', function() {
+  inquiryType = 'private';
+  document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('active'); });
+  this.classList.add('active');
+});
+document.getElementById('typeAgency').addEventListener('click', function() {
+  inquiryType = 'agency';
+  document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('active'); });
+  this.classList.add('active');
+});
+
+document.getElementById('inqSubmitBtn').addEventListener('click', async function() {
+  var name = document.getElementById('inqName').value.trim();
+  var email = document.getElementById('inqEmail').value.trim();
+  var whatsapp = document.getElementById('inqWhatsapp').value.trim();
+  var btn = this;
 
   if (!name || !email || !whatsapp) {
     btn.textContent = 'Please fill all fields';
     btn.style.background = '#8b0000';
     btn.style.color = '#fff';
-    setTimeout(() => {
+    setTimeout(function() {
       btn.textContent = 'Send Request';
       btn.style.background = '';
       btn.style.color = '';
@@ -1232,12 +1253,12 @@ async function submitInquiry() {
   btn.textContent = 'Sending...';
 
   try {
-    const res = await fetch('https://martonretreat.shop/api/villa-inquiry', {
+    var res = await fetch('https://martonretreat.shop/api/villa-inquiry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, whatsapp, type: inquiryType, source: 'villa-investment' }),
+      body: JSON.stringify({ name: name, email: email, whatsapp: whatsapp, type: inquiryType, source: 'villa-' + inquirySource }),
     });
-    const data = await res.json();
+    var data = await res.json();
     if (data.ok) {
       document.getElementById('modalForm').style.display = 'none';
       document.getElementById('modalSuccess').style.display = 'block';
@@ -1248,17 +1269,17 @@ async function submitInquiry() {
     btn.textContent = 'Error — Try Again';
     btn.style.background = '#8b0000';
     btn.style.color = '#fff';
-    setTimeout(() => {
+    setTimeout(function() {
       btn.disabled = false;
       btn.textContent = 'Send Request';
       btn.style.background = '';
       btn.style.color = '';
     }, 2500);
   }
-}
+});
 
 document.getElementById('inquiryModal').addEventListener('click', function(e) {
-  if (e.target === this) closeInquiryModal();
+  if (e.target === this) closeModal();
 });
 </script>
 </body>
