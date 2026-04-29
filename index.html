@@ -278,6 +278,11 @@
     .price-card { padding: 40px 24px; }
   }
 
+  .wa-float { position:fixed; bottom:32px; right:32px; z-index:900; width:60px; height:60px; border-radius:50%; background:#25D366; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(37,211,102,0.4); transition:all 0.3s; }
+  .wa-float:hover { transform:scale(1.1); box-shadow:0 6px 24px rgba(37,211,102,0.5); }
+  .wa-float svg { width:32px; height:32px; fill:#fff; }
+  @media (max-width:768px) { .wa-float { bottom:20px; right:20px; width:54px; height:54px; } .wa-float svg { width:28px; height:28px; } }
+
   .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
   .modal-overlay.open { display:flex; }
   .modal-box { background:#1a1a1a; border:1px solid rgba(198,169,98,0.25); border-radius:16px; padding:40px; max-width:480px; width:90%; position:relative; animation:fadeDown 0.4s ease; }
@@ -1122,6 +1127,11 @@
   </div>
 </section>
 
+<!-- ==================== WHATSAPP FLOAT ==================== -->
+<button class="wa-float" id="waFloat" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 0C7.164 0 .004 7.16.004 16c0 2.82.736 5.572 2.132 8l-2.236 8.164 8.368-2.196A15.93 15.93 0 0016.004 32C24.844 32 32 24.84 32 16S24.844 0 16.004 0zm0 29.12a13.08 13.08 0 01-6.672-1.824l-.48-.284-4.964 1.3 1.324-4.836-.312-.496A13.04 13.04 0 012.884 16c0-7.24 5.88-13.12 13.12-13.12S29.12 8.76 29.12 16s-5.876 13.12-13.116 13.12zm7.192-9.82c-.396-.2-2.34-1.156-2.704-1.288-.364-.132-.628-.2-.892.2s-1.024 1.288-1.256 1.552c-.232.264-.46.296-.856.1-.396-.2-1.672-.616-3.184-1.964-1.176-1.048-1.972-2.344-2.204-2.74-.232-.396-.024-.608.176-.808.18-.18.396-.464.596-.696.2-.232.264-.396.396-.66.132-.264.068-.496-.032-.696-.1-.2-.892-2.148-1.22-2.944-.324-.776-.652-.672-.892-.684l-.76-.012c-.264 0-.692.1-1.056.496s-1.384 1.352-1.384 3.3 1.416 3.828 1.616 4.092c.2.264 2.792 4.26 6.764 5.976.944.408 1.684.652 2.26.836.948.3 1.812.26 2.496.156.76-.116 2.34-.956 2.672-1.88.328-.924.328-1.716.232-1.88-.1-.164-.364-.264-.76-.46z"/></svg>
+</button>
+
 <!-- ==================== INQUIRY MODAL ==================== -->
 <div class="modal-overlay" id="inquiryModal">
   <div class="modal-box">
@@ -1195,7 +1205,10 @@ function openModal(source) {
   inquirySource = source || 'contact';
   const title = document.getElementById('modalTitle');
   const sub = document.getElementById('modalSub');
-  if (source === 'viewing') {
+  if (source === 'whatsapp') {
+    title.textContent = 'Connect via WhatsApp';
+    sub.textContent = 'Fill in your details to start a WhatsApp conversation with the property owner.';
+  } else if (source === 'viewing') {
     title.textContent = 'Schedule Property Viewing';
     sub.textContent = 'Leave your details and we will arrange a private viewing of the villa at your convenience.';
   } else {
@@ -1218,6 +1231,7 @@ function closeModal() {
 document.getElementById('ctaContact').addEventListener('click', function() { openModal('contact'); });
 document.getElementById('ctaViewing').addEventListener('click', function() { openModal('viewing'); });
 document.getElementById('ctaFooter').addEventListener('click', function() { openModal('contact'); });
+document.getElementById('waFloat').addEventListener('click', function() { openModal('whatsapp'); });
 document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
 
 document.getElementById('typePrivate').addEventListener('click', function() {
@@ -1260,6 +1274,10 @@ document.getElementById('inqSubmitBtn').addEventListener('click', async function
     });
     var data = await res.json();
     if (data.ok) {
+      if (inquirySource === 'whatsapp') {
+        var waMsg = encodeURIComponent('Hi, I\'m ' + name + '. I\'m interested in Paradise Palm Villa ($263K). Could you provide more details?');
+        window.open('https://wa.me/6287848666355?text=' + waMsg, '_blank');
+      }
       document.getElementById('modalForm').style.display = 'none';
       document.getElementById('modalSuccess').style.display = 'block';
     } else {
